@@ -358,11 +358,12 @@ RequestHandler::Status Handler_Proxy::Init(const std::string& uri_prefix, const 
       if (tokens.size() >= 2) {
         this->host = tokens[1];
       }
-    }
-    else if (tokens[0] == "port") {
+    } else if (tokens[0] == "port") {
       if (tokens.size() >= 2) {
         this->port = tokens[1];
       }
+    } else {
+      return ERROR;
     }
   }
 
@@ -404,7 +405,7 @@ RequestHandler::Status Handler_Proxy::HandleRequest(const Request& req, Response
                         + "Host: " + host + ":" + port + "\r\n"
                         + "Connection: close\r\n\r\n";
     boost::asio::write(sock, 
-                       boost::asio::buffer(request.c_str(), request.length()));
+                       boost::asio::buffer(request, request.length()));
 
     // get response from host
     boost::asio::streambuf buffer;
@@ -413,8 +414,6 @@ RequestHandler::Status Handler_Proxy::HandleRequest(const Request& req, Response
       if (error) break;
     }
     std::string raw_response((std::istreambuf_iterator<char>(&buffer)), std::istreambuf_iterator<char>());
-    // get rid of trailing "\r\n\r\n" from raw_response
-    raw_response = raw_response.substr(0, raw_response.size() - 4);
     ParseResponse(raw_response);
 
     if (response_code == 301 || response_code == 302) { // redirect. try new host
