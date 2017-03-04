@@ -1,6 +1,7 @@
 # !!! USE TABS NOT SPACES !!!
 
 GTEST_DIR=googletest/googletest
+GMOCK_DIR=googletest/googlemock
 CFLAGS = -std=c++0x -g
 
 
@@ -14,6 +15,12 @@ compile_gtest:
 # make googletest, NOT use variable CFLAGS to aviod redundant files
 	g++ $(CFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 	ar -rv libgtest.a gtest-all.o
+
+
+compile_gmock:
+	g++ $(CFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+	g++ $(CFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) -pthread -c ${GMOCK_DIR}/src/gmock-all.cc
+	ar -rv libgmock.a gmock-all.o gtest-all.o
 
 
 compile_request_test: compile_gtest
@@ -31,7 +38,11 @@ compile_server_test: compile_gtest
 	g++ $(CFLAGS) -isystem ${GTEST_DIR}/include -pthread server_test.cc server.cc config_parser.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o server_tests -lboost_system -lpthread
 
 
-compile_all_tests: compile_parser_test compile_server_test
+compile_proxy_handler_test: compile_gtest
+	g++ $(CFLAGS) -isystem ${GTEST_DIR}/include -isystem ${GMOCK_DIR}/include -pthread proxy_handler_test.cc request_handler.cc config_parser.cc logging.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o proxy_handler_test -lboost_system -lpthread
+
+
+compile_all_tests: compile_parser_test compile_server_test compile_proxy_handler_test
 
 
 compile_all_tests_with_coverage:  CFLAGS += -fprofile-arcs -ftest-coverage
@@ -41,6 +52,7 @@ compile_all_tests_with_coverage: compile_all_tests
 run_all_tests: compile_all_tests_with_coverage
 	./config_parser_test
 	./server_tests
+	./proxy_handler_test
 
 
 run_test_coverage: run_all_tests

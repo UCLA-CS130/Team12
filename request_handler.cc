@@ -372,6 +372,10 @@ RequestHandler::Status Handler_Proxy::Init(const std::string& uri_prefix, const 
 
 
 RequestHandler::Status Handler_Proxy::HandleRequest(const Request& req, Response* res){
+	if (res == nullptr) {
+		return ERROR;
+	}
+
   while (true) {
     // connect to host
     boost::asio::io_service io_service;
@@ -393,9 +397,10 @@ RequestHandler::Status Handler_Proxy::HandleRequest(const Request& req, Response
     std::string request_uri = req.uri();
     std::string relative_uri;
     if (request_uri != uri 
+        && uri != "/"
         && request_uri.size() > uri.size() 
         && request_uri.substr(0, uri.size()) == uri) {
-      relative_uri = request_uri.substr(uri.size() - 1);
+      relative_uri = request_uri.substr(uri.size());
     } else {
       relative_uri = request_uri;
     }
@@ -444,6 +449,7 @@ RequestHandler::Status Handler_Proxy::ParseResponse(const std::string& raw_respo
   response_code = 0;
   headers.clear();
   body.clear();
+  state = http_version_h;
 
   // parse raw response, character by character
   for (char c : raw_response) {

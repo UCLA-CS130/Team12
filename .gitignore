@@ -2,6 +2,6 @@
 *.o
 *.a
 webserver
-config_parser_test
 server_tests
 request_tests
+*_test
