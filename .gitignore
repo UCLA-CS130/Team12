@@ -5,3 +5,5 @@ webserver
 server_tests
 request_tests
 *_test
+*pem
+*.tar

@@ -8,7 +8,8 @@ CFLAGS = -std=c++0x -g
 compile_webserver:
 # use -pthread to enable multithreading.
 # need to link -lboost_system last.
-	g++ $(CFLAGS) server_main.cc server.cc config_parser.cc request_handler.cc logging.cc -o webserver -pthread -lboost_system
+# -pthread -lboost_system
+	g++ $(CFLAGS) server_main.cc server.cc config_parser.cc request_handler.cc logging.cc -o webserver -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_log_setup -lboost_log -lboost_thread -lboost_system 
 
 
 compile_gtest:
@@ -66,7 +67,19 @@ run_integration_test: compile_webserver
 	python integration_test.py
 
 
+build_docker_image:
+	docker build -t httpserver.build .
+	docker run httpserver.build > deploy/binary.tar
+	tar -xvf deploy/binary.tar
+	rm deploy/binary.tar
+	docker build -t httpserver deploy
+
+
+deploy_aws:
+	./deploy_aws.sh
+
+
 clean:
 # use -f to ignore non-existent files
-	rm -rf webserver request_tests server_tests config_parser config_parser_test server_tests *.o *.a *~ *.gcov *.gcda *.gcno 
+	rm -rf webserver request_tests server_tests config_parser config_parser_test server_tests *.o *.a *~ *.gcov *.gcda *.gcno *.tar
 

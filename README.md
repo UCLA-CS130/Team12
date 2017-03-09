@@ -53,3 +53,15 @@ e.g. "/static/foo/bar" => "/static" + "/foo/bar". <br />
 + *Logging*  <br />
 Implemented using singleton, `Logger`. <br />
 The method `get_statusPage` will generate a simple html status page as a string. <br />
+
+
+## Docker 
+
++ Build Docker Image <br />
+`make build_docker_image`
+
++ Deploy to AWS <br />
+`$ ./deploy_aws.sh`
+
++ Send request to server instance on AWS <br />
+e.g. `$ http://52.53.150.174:2020/status`
