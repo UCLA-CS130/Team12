@@ -747,9 +747,7 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
   else if (req.method() == "POST"){  
     // echo back body
     res->AddHeader("Content-type", "text");
-    res->AddHeader("Content-length", std::to_string(req.body().length()));
     std::cerr << "DEBUG: " << req.body() << std::endl;
-    res->SetBody(req.body());
 
     // === redirect python stdout to buffer ===
     char buffer[MAX_LEN+1] = {0};
@@ -768,10 +766,8 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
 
     Py_SetProgramName("cs130python");  /* optional but recommended */
     Py_Initialize();
-    PyRun_SimpleString("from time import time,ctime\n"
-                       "print 'Today is',ctime(time())\n");
-    PyRun_SimpleString("a=1\n"
-                       "print 'something %s'%(a,)\n");
+    PyRun_SimpleString((req.body() + "\0").c_str());
+    PyRun_SimpleString("print ' '");
     Py_Finalize();
 
     read(out_pipe[0], buffer, MAX_LEN); /* read from pipe into buffer */
@@ -779,6 +775,10 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
     printf("DEBUG REDIRCTED: %s\n", buffer);
     std::cout << "DEBUG: TEST reconnected stdout \n";
+    std::cout << "DEBUG: |" << ((std::string)buffer) << "| length "  << std::to_string(((std::string)buffer).length()) << std::endl;
+    res->AddHeader("Content-length", std::to_string(((std::string)buffer).length()));
+    res->SetBody(((std::string)buffer));
+
   }
   
   return OK;

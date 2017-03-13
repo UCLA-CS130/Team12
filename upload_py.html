@@ -13,7 +13,7 @@ $(document).ready(function(){
         var src_code = $("textarea").val();
         $.post("/python", src_code, function(data, status){
             //   alert("Data: " + data + "\nStatus: " + status);
-            $('#output').innerHTML= data;
+            document.getElementById("output").innerHTML= data;
         });
     });
 });
@@ -25,13 +25,11 @@ $(document).ready(function(){
 
 <body>
 
-<h1> ENTER YOUR PYTHON CODE!!</h1>
+<h1> ENTER PYTHON CODE!!</h1>
 
 <textarea id = "code_field" name = "search" rows = 10 cols = 60></textarea>
 <button id = "bb" type = "button" value = "enter">ENTER! </button>
-<p id = "output"> </p>
-
-<body>
+<p id = "output"> gg </p>
 
 
 </body>
