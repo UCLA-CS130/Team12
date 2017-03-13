@@ -14,8 +14,8 @@
 
 $(document).ready(function(){
 	$("button").click(function(){
-		var src_code = $("").val();
-	    $.post("python", src_code, function(data, status){
+		var src_code = $("textarea").val();
+	    $.post("/python", src_code, function(data, status){
 	        //   alert("Data: " + data + "\nStatus: " + status);
 	        $('#output').innerHTML= data;
 	    });

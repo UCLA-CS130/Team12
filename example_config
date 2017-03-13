@@ -10,7 +10,7 @@ path /static StaticHandler {
   root ../testfiles;
 }
 
-path /pyhon PythonHandler {
+path /python PythonHandler {
 	
 }
 
