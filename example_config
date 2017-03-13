@@ -2,7 +2,7 @@
 
 port 2020;  # This is also a comment.
 
-path / StaticHandler {
+path /static1 StaticHandler {
   root ./testfiles;
 }
 

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+
+
+
+
+<html>
+
+
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script >
+
+$(document).ready(function(){
+	$("button").click(function(){
+		var src_code = $("textarea").val();
+	    $.post("/python", src_code, function(data, status){
+	        //   alert("Data: " + data + "\nStatus: " + status);
+	        $('#output').innerHTML= data;
+	    });
+	});
+});
+
+
+</script>
+
+
+</head>
+
+
+<body>
+
+<h1> ENTER YOUR PYTHON CODE!!</h1>
+
+<textarea id = "code_field" name = "search" rows = 10 cols = 60></textarea>
+<button id = "bb" type = "button" value = "enter">ENTER! </button>
+<p id = "output"> </p>
+
+<body>
+
+
+</body>
+
+</html>

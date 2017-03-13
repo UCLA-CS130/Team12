@@ -247,7 +247,6 @@ RequestHandler::Status Handler_Static::Init(const std::string& uri_prefix, const
 	return OK;
 }
 
-
 RequestHandler::Status Handler_Static::HandleRequest(const Request& req, Response* res){
 	
 
@@ -347,6 +346,7 @@ RequestHandler::Status Handler_Status::HandleRequest(const Request& req, Respons
 	res->SetBody(statusPage);
 	return OK;
 }
+
 
 
 RequestHandler::Status Handler_Proxy::Init(const std::string& uri_prefix, const NginxConfig& config) {
