@@ -248,6 +248,28 @@ RequestHandler::Status Handler_Static::Init(const std::string& uri_prefix, const
 }
 
 
+
+RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Response* res){
+
+ std::string code;
+
+ code = req.body();
+
+  Py_Initialize();
+  PyRun_SimpleString(code.c_str());
+  Py_Finalize();
+
+  res->SetStatus(res->OK);
+  res->AddHeader("Content-type", "text/plain");
+  res->AddHeader("Content-length", std::to_string(2));
+  res->SetBody("gg");
+
+}
+
+
+
+
+
 RequestHandler::Status Handler_Static::HandleRequest(const Request& req, Response* res){
 	
 
@@ -347,6 +369,7 @@ RequestHandler::Status Handler_Status::HandleRequest(const Request& req, Respons
 	res->SetBody(statusPage);
 	return OK;
 }
+
 
 
 RequestHandler::Status Handler_Proxy::Init(const std::string& uri_prefix, const NginxConfig& config) {

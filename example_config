@@ -2,12 +2,16 @@
 
 port 2020;  # This is also a comment.
 
-path / StaticHandler {
+path /static1 StaticHandler {
   root ./testfiles;
 }
 
 path /static StaticHandler {
   root ../testfiles;
+}
+
+path /pyhon PythonHandler {
+	
 }
 
 path /echo EchoHandler {}

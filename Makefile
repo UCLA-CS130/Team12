@@ -9,7 +9,7 @@ compile_webserver:
 # use -pthread to enable multithreading.
 # need to link -lboost_system last.
 # -pthread -lboost_system
-	g++ $(CFLAGS) server_main.cc server.cc config_parser.cc request_handler.cc logging.cc -o webserver -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_log_setup -lboost_log -lboost_thread -lboost_system 
+	g++ $(CFLAGS) server_main.cc server.cc config_parser.cc request_handler.cc logging.cc -o webserver -I /usr/include/python2.7/ -lpython2.7  -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_log_setup -lboost_log -lboost_thread -lboost_system 
 
 
 compile_gtest:

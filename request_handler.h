@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <algorithm>
+#include <Python.h>
 
 
 class Request {
@@ -128,6 +129,19 @@ class Handler_Echo: public RequestHandler {
 
 	private:
 		std::string uri;
+};
+
+class Handler_Python: public RequestHandler{
+	public:
+		virtual Status Init(const std::string& uri_prefix, const NginxConfig& config){
+			this->uri = uri_prefix;
+			return OK;
+		}
+		virtual Status HandleRequest(const Request& request, Response* response);
+
+	private:
+		std::string uri;
+
 };
 
 
