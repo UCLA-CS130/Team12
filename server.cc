@@ -48,6 +48,12 @@ server_parameters get_server_parameters(const NginxConfig &config) {
           sp.uri2handler[tokens[1]] = h;
           Logger::Instance()->add2handlerMap(tokens[1], tokens[2]);
         }
+        else if (tokens[2] == "PythonHandler"){
+          RequestHandler* h = new Handler_Python;
+          (void*) h->Init(tokens[1], *(statement->child_block_));
+          sp.uri2handler[tokens[1]] = h;
+          Logger::Instance()->add2handlerMap(tokens[1], tokens[2]);
+        }
         else{
           continue;
         }
