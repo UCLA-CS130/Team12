@@ -749,7 +749,7 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     res->AddHeader("Content-type", "text");
     res->AddHeader("Content-length", std::to_string(req.body().length()));
     std::cerr << "DEBUG: " << req.body() << std::endl;
-    res->SetBody(req.raw_request());
+    res->SetBody(req.body());
 
     // === redirect python stdout to buffer ===
     char buffer[MAX_LEN+1] = {0};
