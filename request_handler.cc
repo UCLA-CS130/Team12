@@ -745,12 +745,13 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     res->SetBody(pythonPage);
   }
   else if (req.method() == "POST"){  
+    // echo back body
     res->AddHeader("Content-type", "text");
     res->AddHeader("Content-length", std::to_string(req.body().length()));
     std::cerr << "DEBUG: " << req.body() << std::endl;
     res->SetBody(req.raw_request());
 
-    // =====================================
+    // === redirect python stdout to buffer ===
     char buffer[MAX_LEN+1] = {0};
     int out_pipe[2];
     int saved_stdout;
