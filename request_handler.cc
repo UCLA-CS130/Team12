@@ -733,6 +733,17 @@ RequestHandler::Status Handler_Python::Init(const std::string& uri_prefix, const
 }
 
 
+void replaceAll( std::string &s, const std::string &search, const std::string &replace ) {
+    for( size_t pos = 0; ; pos += replace.length() ) {
+        // Locate the substring to replace
+        pos = s.find( search, pos );
+        if( pos == std::string::npos ) break;
+        // Replace by erasing and inserting
+        s.erase( pos, search.length() );
+        s.insert( pos, replace );
+    }
+}
+
 #define MAX_LEN 1024
 
 RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Response* res){
@@ -766,7 +777,10 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
 
     Py_SetProgramName("cs130python");  /* optional but recommended */
     Py_Initialize();
-    PyRun_SimpleString((req.body() + "\0").c_str());
+    // PyRun_SimpleString((req.body() + "\0").c_str());
+    std::string script = req.body() + "\0";
+    replaceAll(script, ";", "\n");
+    PyRun_SimpleString(script.c_str());
     PyRun_SimpleString("print ' '");
     Py_Finalize();
 
