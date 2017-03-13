@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <algorithm>
+#include <Python.h>
 
 
 class Request {
@@ -241,6 +242,17 @@ class Handler_Proxy : public RequestHandler {
       expecting_newline_3,
       body_state
     } state;
+};
+
+
+class Handler_Python: public RequestHandler {
+    public:
+        virtual Status Init(const std::string& uri_prefix, const NginxConfig& config);
+        virtual Status HandleRequest(const Request& request, Response* response);
+
+    private:
+        std::string uri;
+        std::string pythonPage;
 };
 
 #endif

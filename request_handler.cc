@@ -694,3 +694,91 @@ bool Handler_Proxy::is_tspecial(int c){
 bool Handler_Proxy::is_digit(int c){
   return c >= '0' && c <= '9';
 }
+
+
+std::string readfile(std::string filename)
+{
+  std::ifstream in(filename, std::ios::in | std::ios::binary);
+  if (in)
+  {
+    std::string contents;
+    in.seekg(0, std::ios::end);
+    contents.resize(in.tellg());
+    in.seekg(0, std::ios::beg);
+    in.read(&contents[0], contents.size());
+    in.close();
+    return(contents);
+  }
+  std::cerr << "DEBUG: NO FILE " << filename << std::endl;
+  return "";
+}
+
+
+RequestHandler::Status Handler_Python::Init(const std::string& uri_prefix, const NginxConfig& config){
+  this->uri = uri_prefix;
+
+  for (const auto& statement : config.statements_) {
+    const std::vector<std::string> tokens = statement->tokens_;
+    if (tokens[0] == "pythonPage") {
+      if (tokens.size() >= 2) {
+        this->pythonPage = readfile((std::string)tokens[1]);
+      }
+    } else {
+      std::cerr << "DEBUG: Python config misformatted \n";
+      return ERROR;
+    }
+  }
+
+  return OK;
+}
+
+
+#define MAX_LEN 1024
+
+RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Response* res){
+  std::cerr << "DEBUG: Python Handler\n";
+  std::cerr << "DEBUG: " << req.method() << std::endl;
+  res->SetStatus(res->OK);
+  if (req.method() == "GET"){
+    res->AddHeader("Content-type", "text/html");
+    res->AddHeader("Content-length", std::to_string(pythonPage.length()));
+    res->SetBody(pythonPage);
+  }
+  else if (req.method() == "POST"){  
+    res->AddHeader("Content-type", "text");
+    res->AddHeader("Content-length", std::to_string(req.body().length()));
+    std::cerr << "DEBUG: " << req.body() << std::endl;
+    res->SetBody(req.raw_request());
+
+    // =====================================
+    char buffer[MAX_LEN+1] = {0};
+    int out_pipe[2];
+    int saved_stdout;
+
+    saved_stdout = dup(STDOUT_FILENO);  /* save stdout for display later */
+
+    if( pipe(out_pipe) != 0 ) {          /* make a pipe */
+      exit(1);
+    }
+
+    dup2(out_pipe[1], STDOUT_FILENO);   /* redirect stdout to the pipe */
+    close(out_pipe[1]);
+
+
+    Py_SetProgramName("cs130python");  /* optional but recommended */
+    Py_Initialize();
+    PyRun_SimpleString("from time import time,ctime\n"
+                       "print 'Today is',ctime(time())\n");
+    PyRun_SimpleString("a=1\n"
+                       "print 'something %s'%(a,)\n");
+    Py_Finalize();
+
+    read(out_pipe[0], buffer, MAX_LEN); /* read from pipe into buffer */
+
+    dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
+    printf("DEBUG REDIRCTED: %s\n", buffer);
+    std::cout << "DEBUG: TEST reconnected stdout \n";
+  }
+  
+  return OK;
+}

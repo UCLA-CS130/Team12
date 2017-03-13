@@ -12,6 +12,10 @@ path /static StaticHandler {
 
 path /echo EchoHandler {}
 
+path /python PythonHandler {
+    pythonPage upload_py.html;
+}
+
 path / ProxyHandler {
 	host www.ucla.edu;
 	port 80;

@@ -42,6 +42,12 @@ server_parameters get_server_parameters(const NginxConfig &config) {
           sp.uri2handler[tokens[1]] = h;
           Logger::Instance()->add2handlerMap(tokens[1], tokens[2]);
         }
+        else if (tokens[2] == "PythonHandler"){
+          RequestHandler* h = new Handler_Python;
+          (void*) h->Init(tokens[1], *(statement->child_block_));
+          sp.uri2handler[tokens[1]] = h;
+          Logger::Instance()->add2handlerMap(tokens[1], tokens[2]);
+        }
         else if (tokens[2] == "ProxyHandler"){
           RequestHandler* h = new Handler_Proxy;
           (void*) h->Init(tokens[1], *(statement->child_block_));
@@ -72,7 +78,10 @@ server_parameters get_server_parameters(const NginxConfig &config) {
       }
   }
 
-  std::cout << "SIZE OF MAP : "<<sp.uri2handler.size() <<std::endl;
+  std::cout << "DEBUG: URI to Handler Map";
+  for (auto it=sp.uri2handler.begin(); it!=sp.uri2handler.end(); ++it){
+    std::cout << it->first << " => " << it->second << '\n';
+  }
   return sp;
 }
 
