@@ -779,7 +779,10 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     Py_Initialize();
     // PyRun_SimpleString((req.body() + "\0").c_str());
     std::string script = req.body() + "\0";
+    std::size_t e = script.find("%%%");
+    script = script.substr(0,e);
     replaceAll(script, ";", "\n");
+    std::cerr << "DEBUG replaced: " << script << std::endl;
     PyRun_SimpleString(script.c_str());
     PyRun_SimpleString("print ' '");
     Py_Finalize();
