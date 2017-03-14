@@ -64,7 +64,7 @@ The method `get_statusPage` will generate a simple html status page as a string.
 `$ ./deploy_aws.sh`
 
 + Send request to server instance on AWS <br />
-e.g. `$ http://52.53.150.174:2020/status`
+e.g. `$ http://54.183.253.238:2020/status`
 
 + Demo Assignment 9 <br />
-`$ http://52.53.150.174:2020/static/features.md`
+`$ http://54.183.253.238:2020/static/features.md`

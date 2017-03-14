@@ -11,7 +11,7 @@
      3. The string is the rendered html page and written back as the response 
 
 ### Feature 2 Python Interpretation (main feature)
- * [Here](http://localhost:2020/python)
+ * [Here](http://localhost:8012/python)
  * Type a Python script in the textaread and press the **enter** button beside the text box.
  * The input in the text area is send to the server and executed by python interpreter.
  * The result from standard output is redirected and sent back to the front end.
