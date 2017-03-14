@@ -67,6 +67,10 @@ std::unique_ptr<Request> Request::Parse(const std::string& raw_request){
     	}
 
     	std::cout << "push the header:  " <<field << " : " <<value << std::endl;
+      if(field == "Content-Length")
+      {
+        return_val->m_body_size = atoi(value.c_str());
+      }
     	return_val->m_headers.push_back(std::make_pair(field, value));
 
     }
@@ -124,6 +128,10 @@ std::string Request::raw_request() const {
 
 std::string Request::method() const {
     return m_method;
+}
+
+int Request::body_size() const {
+  return m_body_size;
 }
 
 std::string Request::uri() const {
@@ -751,6 +759,35 @@ RequestHandler::Status Handler_Python::Init(const std::string& uri_prefix, const
 }
 
 
+char from_hex(char ch) {
+    return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
+}
+
+std::string url_decode(std::string text) {
+    char h;
+    std::ostringstream escaped;
+    escaped.fill('0');
+
+    for (auto i = text.begin(), n = text.end(); i != n; ++i) {
+        std::string::value_type c = (*i);
+
+        if (c == '%') {
+            if (i[1] && i[2]) {
+                h = from_hex(i[1]) << 4 | from_hex(i[2]);
+                escaped << h;
+                i += 2;
+            }
+        } else if (c == '+') {
+            escaped << ' ';
+        } else {
+            escaped << c;
+        }
+    }
+
+    return escaped.str();
+}
+
+
 void replaceAll( std::string &s, const std::string &search, const std::string &replace ) {
     for( size_t pos = 0; ; pos += replace.length() ) {
         // Locate the substring to replace
@@ -776,7 +813,9 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
   else if (req.method() == "POST"){  
     // echo back body
     res->AddHeader("Content-type", "text");
-    std::cerr << "DEBUG: " << req.body() << std::endl;
+
+    int req_size = req.body_size();
+
 
     // === redirect python stdout to buffer ===
     char buffer[MAX_LEN+1] = {0};
@@ -792,22 +831,19 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     dup2(out_pipe[1], STDOUT_FILENO);   /* redirect stdout to the pipe */
     close(out_pipe[1]);
 
-
-    Py_SetProgramName("cs130python");  /* optional but recommended */
     Py_Initialize();
     // PyRun_SimpleString((req.body() + "\0").c_str());
     std::string script = req.body() + "\0";
-    std::size_t e = script.find("%%%");
-    script = script.substr(0,e);
-    replaceAll(script, ";", "\n");
-    std::cerr << "DEBUG replaced: " << script << std::endl;
+    script = script.substr(0,req_size);
+    // script = script.replace("%0A", "\n");
+     std::cerr << "DEBUG: " << url_decode(script) << std::endl;
     PyRun_SimpleString(script.c_str());
     PyRun_SimpleString("print ' '");
     Py_Finalize();
 
     read(out_pipe[0], buffer, MAX_LEN); /* read from pipe into buffer */
+    dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout*/
 
-    dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
     printf("DEBUG REDIRCTED: %s\n", buffer);
     std::cout << "DEBUG: TEST reconnected stdout \n";
     std::cout << "DEBUG: |" << ((std::string)buffer) << "| length "  << std::to_string(((std::string)buffer).length()) << std::endl;
