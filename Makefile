@@ -3,13 +3,12 @@
 GTEST_DIR=googletest/googletest
 GMOCK_DIR=googletest/googlemock
 CFLAGS = -std=c++0x -g
-CLINKS = -I /usr/include/python2.7/ -lpython2.7 -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_log_setup -lboost_log -lboost_thread -lboost_system -lboost_regex
+LINKS = -I /usr/include/python2.7/ -lpython2.7 -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_log_setup -lboost_log -lboost_thread -lboost_system -lboost_regex
 
 compile_webserver:
 # use -pthread to enable multithreading.
 # need to link -lboost_system last.
-# -pthread -lboost_system
-	g++ $(CFLAGS) server_main.cc server.cc config_parser.cc request_handler.cc logging.cc markdown.cpp markdown-tokens.cpp -o webserver $(CLINKS)
+	g++ $(CFLAGS) server_main.cc server.cc config_parser.cc request_handler.cc logging.cc markdown.cpp markdown-tokens.cpp -o webserver $(LINKS)
 
 
 compile_gtest:
@@ -69,10 +68,10 @@ run_integration_test: compile_webserver
 
 build_docker_image:
 	docker build -t httpserver.build .
-	docker run httpserver.build > deploy/binary.tar
-	tar -xvf deploy/binary.tar
-	rm deploy/binary.tar
-	docker build -t httpserver deploy
+	docker run httpserver.build > ./deploy/binary.tar
+	tar -xvf ./deploy/binary.tar -C ./deploy
+	rm ./deploy/binary.tar
+	docker build -t httpserver -f deploy/Dockerfile.run ./deploy
 
 
 deploy_aws:

@@ -2,12 +2,15 @@
 
 port 2020;  # This is also a comment.
 
-
 path /static StaticHandler {
   root ./testfiles;
 }
 
 path /echo EchoHandler {}
+
+path /python PythonHandler {
+    pythonPage ./testfiles/upload_py.html;
+}
 
 path / ProxyHandler {
 	host www.ucla.edu;

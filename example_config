@@ -9,7 +9,7 @@ path /static StaticHandler {
 path /echo EchoHandler {}
 
 path /python PythonHandler {
-    pythonPage upload_py.html;
+    pythonPage ./testfiles/upload_py.html;
 }
 
 path / ProxyHandler {

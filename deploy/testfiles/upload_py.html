@@ -22,8 +22,7 @@ $(document).ready(function(){
         var src_code = $("textarea").val();
         var src_code_encode = encodeURIComponent(src_code);
         $.post("/python", src_code_encode, function(data, status){
-            //   alert("Data: " + data + "\nStatus: " + status);
-            document.getElementById("output").innerHTML= src_code_encode;
+            document.getElementById("output").innerHTML= data;
         });
     });
 });

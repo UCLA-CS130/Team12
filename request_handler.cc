@@ -832,11 +832,10 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     close(out_pipe[1]);
 
     Py_Initialize();
-    // PyRun_SimpleString((req.body() + "\0").c_str());
     std::string script = req.body() + "\0";
     script = script.substr(0,req_size);
-    // script = script.replace("%0A", "\n");
-     std::cerr << "DEBUG: " << url_decode(script) << std::endl;
+    script = url_decode(script);
+    std::cerr << "DEBUG parsed: " << script << std::endl;
     PyRun_SimpleString(script.c_str());
     PyRun_SimpleString("print ' '");
     Py_Finalize();
