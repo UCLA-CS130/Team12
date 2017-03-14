@@ -332,7 +332,7 @@ RequestHandler::Status Handler_Static::HandleRequest(const Request& req, Respons
 			file_type = "application/pdf";
 
     else if(file_extension=="md"){
-      file_type = "text/html";
+      file_type = "text/markdown";
       flg_md = true;
     }
 
