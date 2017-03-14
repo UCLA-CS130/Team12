@@ -28,6 +28,7 @@ class Request {
   using Headers = std::vector<std::pair<std::string, std::string>>;
   Headers headers() const;
   std::string body() const;
+  int body_size() const;
 
   // "/static/foo/bar" => "/static" + "/foo/bar"
   std::string uriHead() const;
@@ -40,6 +41,7 @@ class Request {
   	std::string m_version;
   	std::vector<std::pair<std::string, std::string>> m_headers; 
   	std::string m_body;
+    int m_body_size;
 
 };
 

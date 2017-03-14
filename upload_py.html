@@ -5,15 +5,25 @@
 
 <head>
 
+<style>
+
+textarea{
+  background: #ddd;
+  white-space: pre-wrap;  /* <-- THIS PRESERVES THE LINE BREAKS */
+}
+</style>
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
-<script >
+<script>
 $(document).ready(function(){
     $("button").click(function(){
         var src_code = $("textarea").val();
-        $.post("/python", src_code, function(data, status){
+        var src_code_encode = encodeURIComponent(src_code);
+        $.post("/python", src_code_encode, function(data, status){
             //   alert("Data: " + data + "\nStatus: " + status);
-            document.getElementById("output").innerHTML= data;
+            document.getElementById("output").innerHTML= src_code_encode;
         });
     });
 });
@@ -27,7 +37,7 @@ $(document).ready(function(){
 
 <h1> ENTER PYTHON CODE!!</h1>
 
-<textarea id = "code_field" name = "search" rows = 10 cols = 60></textarea>
+<textarea id = "code_field" name = "search" rows = 10 cols = 60 charset=UTF-8></textarea>
 <button id = "bb" type = "button" value = "enter">ENTER! </button>
 <p id = "output"> result goes here </p>
 

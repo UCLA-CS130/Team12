@@ -67,6 +67,10 @@ std::unique_ptr<Request> Request::Parse(const std::string& raw_request){
     	}
 
     	std::cout << "push the header:  " <<field << " : " <<value << std::endl;
+      if(field == "Content-Length")
+      {
+        return_val->m_body_size = atoi(value.c_str());
+      }
     	return_val->m_headers.push_back(std::make_pair(field, value));
 
     }
@@ -124,6 +128,10 @@ std::string Request::raw_request() const {
 
 std::string Request::method() const {
     return m_method;
+}
+
+int Request::body_size() const {
+  return m_body_size;
 }
 
 std::string Request::uri() const {
@@ -758,7 +766,9 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
   else if (req.method() == "POST"){  
     // echo back body
     res->AddHeader("Content-type", "text");
-    std::cerr << "DEBUG: " << req.body() << std::endl;
+
+    int req_size = req.body_size();
+
 
     // === redirect python stdout to buffer ===
     char buffer[MAX_LEN+1] = {0};
@@ -779,10 +789,9 @@ RequestHandler::Status Handler_Python::HandleRequest(const Request& req, Respons
     Py_Initialize();
     // PyRun_SimpleString((req.body() + "\0").c_str());
     std::string script = req.body() + "\0";
-    std::size_t e = script.find("%%%");
-    script = script.substr(0,e);
-    replaceAll(script, ";", "\n");
-    std::cerr << "DEBUG replaced: " << script << std::endl;
+    script = script.substr(0,req_size);
+    // script = script.replace("%0A", "\n");
+     std::cerr << "DEBUG: " << script << std::endl;
     PyRun_SimpleString(script.c_str());
     PyRun_SimpleString("print ' '");
     Py_Finalize();
