@@ -1,6 +1,6 @@
 # CS130 winter 2017
 
-## Echo server, using boost.
+## Boost Http Server.
 + *to build the webserver*
 `$ make compile_webserver`
 
@@ -65,3 +65,6 @@ The method `get_statusPage` will generate a simple html status page as a string.
 
 + Send request to server instance on AWS <br />
 e.g. `$ http://52.53.150.174:2020/status`
+
++ Demo Assignment 9 <br />
+`$ http://52.53.150.174:2020/static/features.md`
