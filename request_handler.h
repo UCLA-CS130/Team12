@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <Python.h>
+#include "markdown.h"
 
 
 class Request {

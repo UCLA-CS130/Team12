@@ -2,18 +2,14 @@
 
 port 2020;  # This is also a comment.
 
-path /static1 StaticHandler {
-  root ./testfiles;
-}
-
 path /static StaticHandler {
-  root ../testfiles;
+  root ./testfiles;
 }
 
 path /echo EchoHandler {}
 
 path /python PythonHandler {
-    pythonPage upload_py.html;
+    pythonPage ./testfiles/upload_py.html;
 }
 
 path / ProxyHandler {

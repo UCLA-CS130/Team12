@@ -285,6 +285,8 @@ RequestHandler::Status Handler_Static::HandleRequest(const Request& req, Respons
 
 	res->SetStatus(res->OK);
 
+  bool flg_md = false;
+
 	// get the content type of the file 
 	// Get insight from https://github.com/UCLA-CS130/Team-KBBQ/blob/master/HttpResponse.cc
 	std::string file_type;
@@ -321,18 +323,34 @@ RequestHandler::Status Handler_Static::HandleRequest(const Request& req, Respons
 		else if(file_extension=="pdf")
 			file_type = "application/pdf";
 
+    else if(file_extension=="md"){
+      file_type = "text/html";
+      flg_md = true;
+    }
+
 		else
 			file_type = "text/plain";
 	}
 
 	std::cout<< "file type is: " <<file_type<<std::endl;
 	res->AddHeader("Content-type", file_type);
-	res->AddHeader("Content-length", std::to_string(file_info.st_size));
 
 	// Read entire file
 	std::ifstream ifs(file_path);
-  	std::string content( (std::istreambuf_iterator<char>(ifs)),
-                       (std::istreambuf_iterator<char>()) );
+	std::string content( (std::istreambuf_iterator<char>(ifs)),
+                     (std::istreambuf_iterator<char>()) );
+  if (flg_md){
+    std::ostringstream s;
+    markdown::Document doc;
+    doc.read(content);
+    doc.write(s);
+    content = s.str();
+    res->AddHeader("Content-length", std::to_string(content.length()));
+  }
+  else{
+    res->AddHeader("Content-length", std::to_string(file_info.st_size));
+  }
+
 	res->SetBody(content);
 	return OK;
 }
